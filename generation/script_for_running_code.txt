@@ -1,0 +1,86 @@
+##
+## FOR PREPARING DATA
+
+DATAPATH=/your_data_path
+python prepare_data_en.py --model_type $DATAPATH/pretrain/story/mbart-large-50 \
+    --dataset_path $DATAPATH/cloze/EN \
+    --train_save_to $DATAPATH/cloze/EN/mbart/train.pt \
+    --dev_save_to $DATAPATH/cloze/EN/mbart/dev.pt \
+    --test_save_to $DATAPATH/cloze/EN/mbart/test.pt \
+    --max_source_length 200 \
+    --max_target_length 50 
+
+python prepare_data_id.py --model_type $DATAPATH/pretrain/story/mbart-large-50 \
+    --dataset_path $DATAPATH/cloze/ID/data \
+    --train_save_to $DATAPATH/cloze/ID/mbart/train.pt \
+    --dev_save_to $DATAPATH/cloze/ID/mbart/dev.pt \
+    --test_save_to $DATAPATH/cloze/ID/mbart/test.pt \
+    --max_source_length 200 \
+    --max_target_length 50
+
+##
+##  FOR TRAINING, IT REQUIRES 4 GPU (each 32 GB)
+
+DATAPATH=/your_data_path
+CUDA_VISIBLE_DEVICES=0,1,2,3 python run_train.py \
+    --model_path $DATAPATH/pretrain/mbart-large-50 \
+    --experiment_path $DATAPATH/experiment \
+    --experiment_name exp1 \
+    --output_dir $DATAPATH/experiment/exp1 \
+    --train_file_path $DATAPATH/EN/mbart/train.pt \
+    --valid_file_path $DATAPATH/EN/mbart/dev.pt \
+    --per_device_train_batch_size 20 \
+    --gradient_accumulation_steps 4 \
+    --max_source_length 200 \
+    --max_target_length 20 \
+    --learning_rate 1e-4 \
+    --num_train_epochs 60 \
+    --warmup_steps 850 \
+    --save_steps 500 \
+    --save_total_limit 20 \
+    --seed 2020 \
+    --do_train
+
+##
+## FOR VALIDATION, RUN AFTER TRAINING. IT REEQUIRES 1 GPU (each 32 GB)
+
+DATAPATH=/your_data_path
+CUDA_VISIBLE_DEVICES=0,1,2,3 python run_val.py \
+    --checkpoint_folder $DATAPATH/experiment/exp1 \
+    --output_dir $DATAPATH/experiment/exp1 \
+    --valid_file_path $DATAPATH/EN/mbart/dev.pt \
+    --per_device_eval_batch_size 30 \
+    --decoding_batch_size 60 \
+    --num_beams 5 \
+    --max_source_length 200 \
+    --max_target_length 50 \
+    --min_target_length 6 \
+    --lang_target en
+
+##
+## FOR TEST, RUN FOR YOUR BEST CHECKPOINT. IT REEQUIRES 1 GPU (each 32 GB)
+
+DATAPATH=/data/gpfs/projects/punim0649/ffajri/Data/cloze
+CUDA_VISIBLE_DEVICES=0 python run_test.py \
+    --checkpoint_folder $DATAPATH/experiment/exp1/checkpoint-BEST \
+    --output_path $DATAPATH/experiment/exp1/result_dev \
+    --output_dir $DATAPATH/experiment/exp1 \
+    --test_file_path $DATAPATH/EN/mbart/dev.pt \
+    --num_beams 5 \
+    --batch_size 100 \
+    --max_source_length 200 \
+    --max_decoding_length 50 \
+    --min_decoding_length 6 \
+    --lang_target en
+
+CUDA_VISIBLE_DEVICES=0 python run_test.py \
+    --checkpoint_folder $DATAPATH/experiment/exp1/checkpoint-BEST \
+    --output_path $DATAPATH/experiment/exp1/result_test_id \
+    --output_dir $DATAPATH/experiment/exp1 \
+    --test_file_path $DATAPATH/ID/mbart/test.pt \
+    --num_beams 5 \
+    --batch_size 100 \
+    --max_source_length 200 \
+    --max_decoding_length 50 \
+    --min_decoding_length 6 \
+    --lang_target id
