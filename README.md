@@ -9,30 +9,14 @@ In In Proceedings of Commonsense Representation and Reasoning Workshop 2022 (**C
 
 ## Dataset
 
-We examine content-based summarization evaluation from the aspects of precision and recall, in the form of focus and coverage to 
-compare system-generated summaries to groundtruth summaries.
+A story in our dataset consists of four-sentence premise, one-sentence correct ending, and one-sentence incorrect ending. In total, we have created 2,325 Indonesian stories with the train/dev/test split 1,000/200/1,135. Please see some examples of our data below, and note that the English translation is only for the illustratrive purposes.
 
-<img src="https://github.com/fajri91/eval_picts/blob/master/indocloze.png.png" width="400">
+<img src="https://github.com/fajri91/eval_picts/blob/master/indocloze.png" width="850">
 
-## MTurk 
+You can find the Indonesian dataset in `Data/data_id`. In the experiment, we also utilize Mostafazadeh et al. (2016) English datasets. Please contact the authors to obtain this dataset and put them in `Data/data_en`. 
 
-* We use the customized [direct assessment](https://github.com/ygraham/direct-assessment) method for annotation.
-* We use Amazon Mechanical Turk for annotation. You can find the MTurk user interface at `mturk/html`.
-* Jupyter notebooks number 0-3 are used to pre- and post-process the MTurk annotation
-* In this repository, we only provide annotation process for ID, FR, TR, ZH, RU, DE, ES. Annotation process for EN will be released seperately
-because the data is from the [FFCI paper](https://arxiv.org/pdf/2011.13662.pdf).
+## Experiments
 
-## Data (Annotation Result)
-
-* You can find **all** annotation result in folder `resulting_data`.
-* The provided scores are the normalized z-score.
-
-## Traditional metrics (ROUGE, METEOR, BLEU)
-
-* You can use jupyter notebooks number 5-6 to compute traditional metrics and its Pearson and Spearman correlations.
-* Please note that for ZH and RU you need to convert all character/word to its latin form by using jupyter notebook `5. transform_RU_and_ZH.ipynb`.
-
-## BERTScore and MoverScore
-
-* We already provide all of the output of BERTScore and MoverScore in folder `bert_score` and `mover_score`, respectively
-* You can use jupyter notebook number 7-8 to compute its Pearson and Spearman correlations.
+Please first install the requirement by `pip install -r requirements.txt`
+* For classification, you can run `classification_*.py` 
+* For generation, please check folder `generation/`
