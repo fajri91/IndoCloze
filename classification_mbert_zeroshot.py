@@ -351,4 +351,5 @@ def running(training_language, test_language):
 running('en')
 running('id')
 running('en+id')
+# We do not provide the code for training with EN', ID', and EN'+ID'. Please adjust the code properly.
 
